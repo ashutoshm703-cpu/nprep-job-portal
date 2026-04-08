@@ -1,0 +1,8 @@
+export const INDIAN_LANGUAGES = [
+  'Assamese', 'Bengali (Bangla)', 'Bodo', 'Dogri',
+  'English', 'Gujarati', 'Hindi', 'Kannada',
+  'Kashmiri', 'Konkani', 'Maithili', 'Malayalam',
+  'Manipuri (Meitei)', 'Marathi', 'Nepali', 'Odia',
+  'Punjabi', 'Sanskrit', 'Santali', 'Sindhi',
+  'Tamil', 'Telugu', 'Urdu'
+]
