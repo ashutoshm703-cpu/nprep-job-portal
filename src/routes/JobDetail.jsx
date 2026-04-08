@@ -180,27 +180,97 @@ export default function JobDetail({ profile, saveProfile, toggleTrack, trackedId
   const isTracked = trackedIds?.includes(job.id)
   const daysLeft = getDaysLeft(job.registrationDeadline)
 
+  const [showVacancyBreakdown, setShowVacancyBreakdown] = useState(false)
   const tabs = ['Info', 'Pattern', 'Syllabus', 'Fees']
 
   const getTabContent = () => {
     switch (activeTab) {
       case 'info':
         return (
-          <div className="space-y-2">
-            <h4 className="text-sm font-semibold text-text-primary">Essential Qualification</h4>
-            {job.jobDetails.info.map((line, i) => (
-              <p key={i} className={`text-xs leading-relaxed ${line === '' || line === 'OR' ? 'text-text-muted font-medium' : 'text-text-secondary'}`}>
-                {line === '' ? '' : line === 'OR' ? 'OR' : `${i + 1}. ${line}`}
-              </p>
-            ))}
+          <div className="space-y-4">
+            {/* Essential Qualifications */}
+            <div>
+              <h4 className="text-[12px] font-bold text-text-primary tracking-tight mb-2">Essential Qualification</h4>
+              <div className="space-y-1.5">
+                {job.jobDetails.info.map((line, i) => {
+                  if (line === '') return <div key={i} className="h-1" />
+                  if (line.startsWith('Pathway') || line === 'OR') {
+                    return <p key={i} className="text-[11px] font-bold text-navy tracking-tight mt-2">{line}</p>
+                  }
+                  return <p key={i} className="text-[11px] text-text-secondary leading-relaxed">{line}</p>
+                })}
+              </div>
+            </div>
+            {/* Age Limits Table */}
+            {job.ageLimits && (
+              <div>
+                <h4 className="text-[12px] font-bold text-text-primary tracking-tight mb-2">Age Limits</h4>
+                <div className="rounded-xl overflow-hidden">
+                  {job.ageLimits.map((row, i) => (
+                    <div key={i} className={`flex items-center justify-between px-3 py-2 ${i % 2 === 0 ? 'bg-surface' : 'bg-white'}`}>
+                      <span className="text-[11px] text-text-secondary tracking-tight">{row.category}</span>
+                      <span className="text-[11px] font-semibold text-text-primary tracking-tight">{row.limit}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )
       case 'pattern':
-        return <p className="text-xs text-text-secondary leading-relaxed">{job.jobDetails.pattern}</p>
+        return (
+          <div className="space-y-3">
+            {job.jobDetails.pattern.split('\n\n').map((block, i) => {
+              const lines = block.split('\n')
+              const title = lines[0]
+              const details = lines.slice(1)
+              return (
+                <div key={i} className={`p-3 rounded-xl ${i === 0 ? 'bg-accent/5' : 'bg-surface'}`}>
+                  <p className="text-[11px] font-bold text-text-primary tracking-tight">{title}</p>
+                  {details.map((d, j) => (
+                    <p key={j} className="text-[10px] text-text-secondary leading-relaxed mt-1">{d}</p>
+                  ))}
+                </div>
+              )
+            })}
+          </div>
+        )
       case 'syllabus':
-        return <p className="text-xs text-text-secondary leading-relaxed">{job.jobDetails.syllabus}</p>
+        return (
+          <div className="space-y-2">
+            {job.jobDetails.syllabus.split('\n\n').map((section, i) => {
+              const lines = section.split(', ')
+              if (lines.length > 2) {
+                return (
+                  <div key={i}>
+                    <div className="flex flex-wrap gap-1.5">
+                      {lines.map((subj, j) => (
+                        <span key={j} className="px-2.5 py-1.5 rounded-lg bg-surface text-[10px] font-medium text-text-primary tracking-tight">
+                          {subj.replace(/[.]$/, '')}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )
+              }
+              return <p key={i} className="text-[11px] text-text-secondary leading-relaxed">{section}</p>
+            })}
+          </div>
+        )
       case 'fees':
-        return <p className="text-xs text-text-secondary leading-relaxed">{job.jobDetails.fees}</p>
+        return (
+          <div className="rounded-xl overflow-hidden">
+            {job.jobDetails.fees.split(' | ').map((row, i) => {
+              const [cat, amount] = row.split(': ')
+              return (
+                <div key={i} className={`flex items-center justify-between px-3 py-2.5 ${i % 2 === 0 ? 'bg-surface' : 'bg-white'}`}>
+                  <span className="text-[11px] text-text-secondary tracking-tight">{cat}</span>
+                  <span className="text-[11px] font-bold text-text-primary tracking-tight">{amount}</span>
+                </div>
+              )
+            })}
+          </div>
+        )
       default:
         return null
     }
@@ -278,7 +348,17 @@ export default function JobDetail({ profile, saveProfile, toggleTrack, trackedId
             </div>
             <div className="flex-1 p-3 bg-surface rounded-xl">
               <p className="text-[10px] text-text-muted mb-0.5">Vacancies</p>
-              <p className="text-sm font-bold text-text-primary">{job.vacancies.toLocaleString()}</p>
+              <div className="flex items-center gap-1.5">
+                <p className="text-sm font-bold text-text-primary">{job.vacancies.toLocaleString()}</p>
+                {job.vacancyBreakdown && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setShowVacancyBreakdown(true) }}
+                    className="text-[8px] font-semibold text-accent bg-accent-soft px-1.5 py-0.5 rounded tracking-tight"
+                  >
+                    Breakdown
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 
@@ -292,7 +372,7 @@ export default function JobDetail({ profile, saveProfile, toggleTrack, trackedId
 
         {/* Job Tracker */}
         <div className="px-5 py-5">
-          <h3 className="text-sm font-bold text-text-primary mb-4">Job Tracker</h3>
+          <h3 className="text-sm font-bold text-text-primary mb-4">Important Dates</h3>
           <div className="bg-surface rounded-2xl p-4">
             <div className="relative">
               {job.jobTracker.map((item, i) => {
@@ -474,6 +554,24 @@ export default function JobDetail({ profile, saveProfile, toggleTrack, trackedId
           setShowEditProfile(true)
         }}
       />
+
+      {/* Vacancy Breakdown Sheet */}
+      <BottomSheet isOpen={showVacancyBreakdown} onClose={() => setShowVacancyBreakdown(false)} title="Vacancy Breakdown" height="auto">
+        <div className="px-6 pb-6">
+          <div className="rounded-xl overflow-hidden">
+            {job.vacancyBreakdown?.map((row, i) => (
+              <div key={i} className={`flex items-center justify-between px-3 py-3 ${i % 2 === 0 ? 'bg-surface' : 'bg-white'}`}>
+                <span className="text-[12px] text-text-secondary tracking-tight">{row.category}</span>
+                <span className="text-[14px] font-bold text-text-primary tracking-tight">{row.count.toLocaleString()}</span>
+              </div>
+            ))}
+            <div className="flex items-center justify-between px-3 py-3 bg-navy/5">
+              <span className="text-[12px] font-bold text-navy tracking-tight">Total</span>
+              <span className="text-[14px] font-bold text-navy tracking-tight">{job.vacancies.toLocaleString()}</span>
+            </div>
+          </div>
+        </div>
+      </BottomSheet>
 
       {/* Profile Edit Sheet — reuse from inline editing */}
       <ProfileEditSheet
