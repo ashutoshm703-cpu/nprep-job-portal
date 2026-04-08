@@ -57,9 +57,9 @@ export const MOCK_JOBS = [
       domicileState: null
     },
     jobTracker: [
-      { label: 'Notification Released', date: '2026-02-24', time: '10:00 AM', status: 'completed' },
-      { label: 'Registration Closed', date: '2026-03-16', time: '05:00 PM', status: 'completed' },
-      { label: 'Prelims', date: '2026-04-11', time: '10:00 AM', status: 'current' },
+      { label: 'Notification Released', date: '2026-02-24', time: '10:00 AM', status: 'completed', actionLabel: 'View Notification', actionUrl: '#notification' },
+      { label: 'Registration Closed', date: '2026-03-16', time: '05:00 PM', status: 'completed', actionLabel: 'Registration Closed', actionUrl: null },
+      { label: 'Prelims', date: '2026-04-11', time: '10:00 AM', status: 'current', actionLabel: 'Download Admit Card', actionUrl: '#admit-card' },
       { label: 'Mains', date: '2026-04-30', time: '10:00 AM', status: 'upcoming' },
       { label: 'Choice Filling', date: null, status: 'upcoming' },
       { label: 'Seat Allotment', date: null, status: 'upcoming' }
@@ -127,12 +127,12 @@ export const MOCK_JOBS = [
       { category: 'OBC/EBC (Female)', limit: '+3 yrs relaxation' },
     ],
     trackingCount: 6200,
-    registrationStatus: 'upcoming',
-    registrationDeadline: '2025-05-31',
-    postedDate: '2025-05-01',
+    registrationStatus: 'live',
+    registrationDeadline: '2026-04-30',
+    postedDate: '2026-03-15',
     heroColor: '#0D7C36',
     iconType: 'heartPulse',
-    isLive: false,
+    isLive: true,
     examType: 'state',
     eligibilityCriteria: {
       minAge: 21,
@@ -154,11 +154,13 @@ export const MOCK_JOBS = [
       domicileRequired: false,
       domicileState: 'Bihar'
     },
+    registrationOpen: true,
+    applyUrl: '#apply-bihar-cho',
     jobTracker: [
-      { label: 'Notification Released', date: '2025-05-01', status: 'completed' },
-      { label: 'Registration Opens', date: '2025-05-10', status: 'completed' },
-      { label: 'Registration Closes', date: '2025-05-31', status: 'completed' },
-      { label: 'Exam Date', date: '2025-07-10', status: 'upcoming' }
+      { label: 'Notification Released', date: '2026-03-15', status: 'completed', actionLabel: 'View Notification', actionUrl: '#notification' },
+      { label: 'Registration Open', date: '2026-04-01', status: 'current', actionLabel: 'Apply Now', actionUrl: '#apply-bihar-cho' },
+      { label: 'Registration Closes', date: '2026-04-30', status: 'upcoming' },
+      { label: 'Exam Date', date: '2026-06-15', status: 'upcoming' }
     ],
     jobDetails: {
       info: [

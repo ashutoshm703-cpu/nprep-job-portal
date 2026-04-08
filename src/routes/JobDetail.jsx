@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowLeft, Share2, CheckCircle2, XCircle, AlertCircle, Shield,
   Bookmark, Play, ChevronDown, ChevronUp, Download, Clock,
-  CircleDot, Circle, AlertTriangle, Edit3
+  CircleDot, Circle, AlertTriangle, Edit3, ExternalLink
 } from 'lucide-react'
 import { MOCK_JOBS } from '../data/jobs'
 import { checkEligibility, formatSalary, getDaysLeft } from '../engine/eligibility'
@@ -395,32 +395,36 @@ export default function JobDetail({ profile, saveProfile, toggleTrack, trackedId
                         }`} />
                       )}
                     </div>
-                    <div className="flex-1 -mt-0.5">
-                      <p className={`text-sm font-medium ${
-                        item.status === 'upcoming' ? 'text-text-muted' : 'text-text-primary'
-                      }`}>{item.label}</p>
-                      {item.date && (
-                        <p className="text-[11px] text-text-muted mt-0.5">
-                          {new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                          {item.time && ` \u2022 ${item.time}`}
-                        </p>
-                      )}
-                      {item.hasVideo && (
-                        <div className="mt-2 flex items-center gap-2 p-2 bg-white rounded-lg shadow-sm">
-                          <div className="w-10 h-10 rounded-lg bg-navy/10 flex items-center justify-center">
-                            <Play size={14} className="text-navy" />
-                          </div>
-                          <div>
-                            <p className="text-xs font-medium text-text-primary">{item.videoTitle}</p>
-                            <p className="text-[10px] text-text-muted">{item.videoDuration}</p>
-                          </div>
-                        </div>
-                      )}
-                      {item.downloadAvailable && (
-                        <button className="mt-2 flex items-center gap-1.5 px-3 py-1.5 border border-border rounded-lg text-xs text-accent font-medium">
-                          <Download size={12} />
-                          Download PDF
+                    <div className="flex-1 -mt-0.5 flex items-start justify-between">
+                      <div>
+                        <p className={`text-sm font-medium ${
+                          item.status === 'upcoming' ? 'text-text-muted' : 'text-text-primary'
+                        }`}>{item.label}</p>
+                        {item.date && (
+                          <p className="text-[11px] text-text-muted mt-0.5">
+                            {new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                            {item.time && ` \u2022 ${item.time}`}
+                          </p>
+                        )}
+                      </div>
+                      {/* Action button for this milestone */}
+                      {item.actionLabel && item.actionUrl && (
+                        <button
+                          onClick={() => window.open(item.actionUrl, '_blank')}
+                          className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-semibold tracking-tight transition-all ${
+                            item.status === 'current'
+                              ? 'gradient-navy text-white shadow-sm'
+                              : 'text-accent bg-accent-soft'
+                          }`}
+                        >
+                          <ExternalLink size={9} />
+                          {item.actionLabel}
                         </button>
+                      )}
+                      {item.actionLabel && !item.actionUrl && (
+                        <span className="px-2.5 py-1 rounded-lg text-[10px] font-medium tracking-tight text-text-muted bg-slate-100">
+                          {item.actionLabel}
+                        </span>
                       )}
                     </div>
                   </div>

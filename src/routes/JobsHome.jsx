@@ -6,7 +6,8 @@ import {
   Bookmark, Clock, Briefcase, Users, CircleDot, Circle,
   CheckCircle2, XCircle, AlertTriangle, FileText, TrendingUp,
   User, IndianRupee, Stethoscope, Hospital, HeartPulse,
-  Activity, ShieldPlus, Microscope, Building2, Sparkles, Flame
+  Activity, ShieldPlus, Microscope, Building2, Sparkles, Flame,
+  ExternalLink
 } from 'lucide-react'
 import BottomSheet from '../components/shared/BottomSheet'
 import StatePicker from '../components/shared/StatePicker'
@@ -357,7 +358,7 @@ function JobCard({ job, onTrack, onTap, isRecommended = false, index = 0 }) {
             </motion.button>
           </motion.div>
 
-          {/* Timeline — slides in when tracked */}
+          {/* Timeline + Apply Now — slides in when tracked */}
           {job.isTracked && (
             <motion.div
               initial={{ opacity: 0, y: 15 }}
@@ -365,6 +366,24 @@ function JobCard({ job, onTrack, onTap, isRecommended = false, index = 0 }) {
               transition={{ duration: 0.4, delay: 0.15, ease: [0.25, 0.46, 0.45, 0.94] }}
             >
               <MiniTimeline tracker={job.jobTracker} />
+              {/* Apply Now — only when registration is open */}
+              {job.registrationOpen && (
+                <motion.button
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={(e) => { e.stopPropagation(); window.open(job.applyUrl || '#', '_blank') }}
+                  className={`w-full mt-2.5 py-2.5 rounded-xl text-[11px] font-bold tracking-tight flex items-center justify-center gap-1.5 transition-all ${
+                    daysLeft && daysLeft <= 5
+                      ? 'gradient-navy text-white shadow-elevated animate-pulse'
+                      : 'text-navy bg-navy/5 hover:bg-navy/10'
+                  }`}
+                >
+                  <ExternalLink size={12} />
+                  {daysLeft && daysLeft <= 5 ? `Apply Now — ${daysLeft}d left` : 'Apply Now'}
+                </motion.button>
+              )}
             </motion.div>
           )}
         </div>
