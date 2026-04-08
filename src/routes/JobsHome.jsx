@@ -164,7 +164,7 @@ function EligibilityBadge({ eligibility }) {
         className="relative inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold tracking-tight bg-success-light text-success overflow-hidden"
       >
         <span className="absolute inset-0 animate-shimmer opacity-40" style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.6) 50%, transparent 100%)', backgroundSize: '200% 100%' }} />
-        <CheckCircle2 size={10} strokeWidth={2.5} /> You qualify
+        <CheckCircle2 size={10} strokeWidth={2.5} /> Eligible
       </motion.span>
     )
   }
@@ -175,7 +175,7 @@ function EligibilityBadge({ eligibility }) {
         animate={{ scale: 1, opacity: 1 }}
         className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold tracking-tight bg-warning-light text-warning"
       >
-        <AlertTriangle size={10} strokeWidth={2.5} /> Check criteria
+        <AlertTriangle size={10} strokeWidth={2.5} /> Likely Eligible
       </motion.span>
     )
   }
@@ -185,7 +185,7 @@ function EligibilityBadge({ eligibility }) {
       animate={{ scale: 1, opacity: 1 }}
       className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold tracking-tight bg-error-light text-error"
     >
-      <XCircle size={10} strokeWidth={2.5} /> Not eligible
+      <XCircle size={10} strokeWidth={2.5} /> Not Eligible
     </motion.span>
   )
 }
@@ -279,21 +279,22 @@ function JobCard({ job, onTrack, onTap, isRecommended = false, index = 0 }) {
             </div>
           </div>
 
-          {/* Top-right: Eligibility badge only — clean, no clutter */}
-          <EligibilityBadge eligibility={job.eligibility} />
+          {/* Top-right: chevron only */}
+          {!job.isTracked && <ChevronRight size={16} className="text-text-muted mt-1 flex-shrink-0" />}
         </div>
 
-        {/* ── Row 2: Countdown (if applicable) ── */}
-        {daysLeft !== null && daysLeft > 0 && (
-          <div className="mt-1.5">
-            <span className={`inline-flex items-center gap-0.5 text-[10px] font-semibold tracking-tight ${
-              daysLeft <= 5 ? 'text-error' : 'text-text-muted'
+        {/* ── Row 2: Badge row — eligibility + countdown as proper badges ── */}
+        <div className="flex items-center gap-1.5 mt-2 flex-wrap">
+          <EligibilityBadge eligibility={job.eligibility} />
+          {daysLeft !== null && daysLeft > 0 && (
+            <span className={`inline-flex items-center gap-0.5 px-2 py-0.5 rounded-md text-[10px] font-semibold tracking-tight ${
+              daysLeft <= 5 ? 'bg-error-light text-error' : 'bg-slate-100 text-text-secondary'
             }`}>
               <Clock size={9} strokeWidth={2.5} />
               {daysLeft <= 5 ? `${daysLeft}d — closing soon` : `${daysLeft}d left`}
             </span>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* ── Row 3: Salary + Vacancies ── */}
         <div className="flex items-center gap-5 mt-2">

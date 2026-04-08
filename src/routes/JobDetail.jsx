@@ -99,13 +99,24 @@ function EligibilitySheet({ isOpen, onClose, eligibility, onEdit }) {
     <BottomSheet isOpen={isOpen} onClose={onClose} title="Job Eligibility" height="75vh">
       <div className="px-6 pb-6">
         {/* Status banner */}
-        <div className={`p-3.5 rounded-xl mb-5 ${isEligible ? 'bg-success-light' : 'bg-error-light'}`}>
-          <p className={`text-sm font-medium ${isEligible ? 'text-success' : 'text-error'}`}>
-            {isEligible
-              ? 'You are eligible for this exam!'
-              : failReason || 'You are not eligible for this exam'}
-          </p>
-        </div>
+        {(() => {
+          const hasCautions = softCriteria?.some(c => c.status === 'caution')
+          if (isEligible && !hasCautions) return (
+            <div className="p-3.5 rounded-xl mb-5 bg-success-light">
+              <p className="text-sm font-medium text-success">Eligible — You meet all the criteria for this exam</p>
+            </div>
+          )
+          if (isEligible && hasCautions) return (
+            <div className="p-3.5 rounded-xl mb-5 bg-warning-light">
+              <p className="text-sm font-medium text-warning">Likely Eligible — Please verify the caution items below</p>
+            </div>
+          )
+          return (
+            <div className="p-3.5 rounded-xl mb-5 bg-error-light">
+              <p className="text-sm font-medium text-error">Not Eligible — {failReason || 'You do not meet the criteria for this exam'}</p>
+            </div>
+          )
+        })()}
 
         {/* Hard criteria */}
         <div className="space-y-4">
@@ -174,9 +185,7 @@ export default function JobDetail({ profile, saveProfile, toggleTrack, trackedId
   const job = useMemo(() => MOCK_JOBS.find(j => j.id === id), [id])
   if (!job) return <div className="p-6 text-center text-text-muted">Job not found</div>
 
-  const eligibility = profile?.onboardingComplete
-    ? checkEligibility(profile, job.eligibilityCriteria)
-    : null
+  const eligibility = checkEligibility(profile, job.eligibilityCriteria)
   const isTracked = trackedIds?.includes(job.id)
   const daysLeft = getDaysLeft(job.registrationDeadline)
 
@@ -311,13 +320,19 @@ export default function JobDetail({ profile, saveProfile, toggleTrack, trackedId
           <button
             onClick={() => setShowEligibility(true)}
             className={`flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full ${
-              eligibility.isEligible
+              eligibility.isEligible && !eligibility.softCriteria?.some(c => c.status === 'caution')
                 ? 'text-success bg-success-light'
-                : 'text-error bg-error-light'
+                : eligibility.isEligible
+                  ? 'text-warning bg-warning-light'
+                  : 'text-error bg-error-light'
             }`}
           >
-            {eligibility.isEligible ? <CheckCircle2 size={14} /> : <XCircle size={14} />}
-            {eligibility.isEligible ? 'You are eligible for this job' : 'You are not eligible'}
+            {eligibility.isEligible && !eligibility.softCriteria?.some(c => c.status === 'caution')
+              ? <><CheckCircle2 size={14} /> Eligible</>
+              : eligibility.isEligible
+                ? <><AlertTriangle size={14} /> Likely Eligible</>
+                : <><XCircle size={14} /> Not Eligible</>
+            }
             <span className="text-[10px] underline ml-1">Check</span>
           </button>
         ) : (
